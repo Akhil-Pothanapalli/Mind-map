@@ -30,7 +30,11 @@ Now preparing the data to do so, is nearlly impossble, because mind maps are sub
 
 During my hunt for solution this step, I came across KeyBERT and top2Vec. Initially I will implement KeyBERT. top2Vec is planned for future version. Followed by them I will cluster them so that I can find the sub topics this solves the first one - grouped.
 
+I've successfully implemented the keyword extractor, but loading the model directly is creating impact, to the storage, next use API's.
+
 2. Reflective: Your mind map should reflect how you think, not how you write linearly. Don't be afraid to experiment with different layouts.
+
+For this I will use top2vec in future.
 
 When it comes to reflective, I want it to be a graph rather than tree also try different ones so I can find better version. I can take reference from random forest. But this is where humans excel over machines.
 
