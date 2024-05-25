@@ -59,6 +59,7 @@ def extract_word_similarities(keywords, word_embedding_model):
   """
   logging.info("creating word embedding pairs for keywords")
 
+
   similarities = set()
   for i in range(len(keywords)):
     for j in range(i + 1, len(keywords)):
