@@ -5,3 +5,4 @@ scikit-learn
 spacy
 networkx
 matplotlib
+bokeh
