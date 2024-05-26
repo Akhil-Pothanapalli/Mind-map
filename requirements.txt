@@ -1,8 +1,7 @@
 transformers
 torch
-
 keybert
-sklearn
+scikit-learn
 spacy
 networkx
 matplotlib
