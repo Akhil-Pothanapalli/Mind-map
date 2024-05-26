@@ -1,106 +1,63 @@
-import os
+from keybert import KeyBERT
+from transformers import BertModel, BertTokenizer
 import torch
-from logger import logging
-
-from transformers import AutoTokenizer, AutoModelForSeq2SeqLM
-from gensim.models import Word2Vec  # Example using Word2Vec
-
-def extract_keywords(text):
-    """
-    Extracts keywords from a given text using KeyBART.
-
-    Args:
-      text (str): The text input from which to extract keywords.
-
-    Returns:
-      list: A list of strings representing the extracted keywords.
-    """
-
-    # Preprocess text (optional, consider domain-specific cleaning)
-    # You can add steps like removing stop words, stemming/lemmatization here
-    # processed_text = text.lower()  # Example: convert to lowercase
-
-    logging.info("Extracting keywords")
-
-    # Tokenize the text
-    inputs = tokenizer(text, return_tensors="pt")
-
-    # Generate keyphrases using KeyBART
-    with torch.no_grad():
-        logging.info("Using KeyBART model")
-        outputs = model.generate(**inputs)
-
-    # Decode the generated tokens (assuming first output is the most likely)
-    decoded_text = tokenizer.decode(outputs[0], skip_special_tokens=True)
-
-    # Extract keywords from the generated text (replace with your selection logic)
-    keywords = decoded_text.split(" ")  # Simple splitting by space (modify as needed)
-    logging.info("Keywords extracted")
-
-    return keywords
+import sklearn
+import networkx as nx
+import matplotlib.pyplot as plt
 
 
-# Generate a set of word embeddings
+kw_model = KeyBERT()
 
-# Load pre-trained word embeddings (replace with your model path)
-word_embedding_model = Word2Vec.load("word2vec_model.bin")
+text = "Your input text goes here."
+keywords = kw_model.extract_keywords(text, top_n=10)
 
-
-def extract_word_similarities(keywords, word_embedding_model):
-  """
-  Calculates pairwise similarities between keywords using a word embedding model.
-
-  Args:
-      keywords (list): A list of strings representing the keywords.
-      word_embedding_model (gensim.models.Word2Vec): A loaded word embedding model.
-
-  Returns:
-      set: A set containing tuples of (word1, word2, similarity) representing word pairs and their similarities.
-  """
-  logging.info("creating word embedding pairs for keywords")
+# Print extracted keywords
+print(keywords)
 
 
-  similarities = set()
-  for i in range(len(keywords)):
-    for j in range(i + 1, len(keywords)):
-      word1, word2 = keywords[i], keywords[j]
-      # Check if both words are in the word embedding vocabulary
-      logging.info("Using Word2Vec model")
-      if word1 in word_embedding_model.wv and word2 in word_embedding_model.wv:
-        similarity = word_embedding_model.wv.similarity(word1, word2)
-        similarities.add((word1, word2, similarity))
-      else:
-        print(f"Warning: Skipping similarity calculation for {word1} and {word2} (not in vocabulary)")
+# Load pre-trained BERT model and tokenizer
+model_name = 'bert-base-uncased'
+tokenizer = BertTokenizer.from_pretrained(model_name)
+model = BertModel.from_pretrained(model_name)
 
-  logging.info("Word embeddings created")
+# Function to get embeddings
+def get_embedding(text):
+    inputs = tokenizer(text, return_tensors='pt', truncation=True, padding=True)
+    outputs = model(**inputs)
+    return outputs.last_hidden_state.mean(dim=1)
 
-  return similarities
+# Get embeddings for keywords
+keyword_embeddings = {kw: get_embedding(kw) for kw, _ in keywords}
 
+# Calculate cosine similarities
+from sklearn.metrics.pairwise import cosine_similarity
 
-# Example usage
-text = "This is a sample document about natural language processing."
-keywords = extract_keywords(text)  # Replace with your actual extract_keywords function
-
-word_similarities = extract_word_similarities(keywords, model)
-
-# Print the word similarities
-for word1, word2, similarity in word_similarities:
-  print(f"{word1} - {word2} similarity:", similarity)
+similarity_matrix = cosine_similarity(
+    [embedding.detach().numpy() for embedding in keyword_embeddings.values()]
+)
 
 
-if __name__ == "__main__":
-    
-    logging.info("Initiating the model")
+# Create a graph
+G = nx.Graph()
 
-    # Load KeyBART tokenizer and model
-    tokenizer = AutoTokenizer.from_pretrained("bloomberg/KeyBART")
-    model = AutoModelForSeq2SeqLM.from_pretrained("bloomberg/KeyBART")
+# Add nodes
+for kw, _ in keywords:
+    G.add_node(kw)
 
-    # Get user input text
-    user_text = input("Enter the text to extract keywords from: ")
+# Add edges with similarity scores as weights
+threshold = 0.5  # You can adjust this threshold
+for i, kw1 in enumerate(keyword_embeddings):
+    for j, kw2 in enumerate(keyword_embeddings):
+        if i != j and similarity_matrix[i, j] > threshold:
+            G.add_edge(kw1, kw2, weight=similarity_matrix[i, j])
 
-    # Extract keywords from the user input
-    keywords = extract_keywords(user_text)
+# Print the graph nodes and edges
+print(G.nodes())
+print(G.edges(data=True))
 
-    # Print the extracted keywords
-    print("Extracted keywords:", keywords)
+
+# Draw the graph
+pos = nx.spring_layout(G)
+weights = [G[u][v]['weight'] for u,v in G.edges()]
+nx.draw(G, pos, with_labels=True, width=weights)
+plt.show()

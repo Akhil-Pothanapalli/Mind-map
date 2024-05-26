@@ -40,7 +40,7 @@ When it comes to reflective, I want it to be a graph rather than tree also try d
 
 3. Interconnected: Look for connections between different ideas, even if they seem distant at first. This will help you create a more holistic understanding of the topic.
 
-Interconnected - this is somewhat similar to graph I need to connect them based on cause-effect, who, where etc., there can n types or so.
+Interconnected - this is somewhat similar to graph I need to connect them based on cause-effect, who, where etc., there can n types or so. I tried Word2Vec to generate the embedding vector and find similarities but it's depedent on C++ compiler. My current resources doesn't support such huge Visual Studio and so on. So looking for alternatives and found Spacy. 
 
 4. Non-verbal: Use images, symbols, and doodles instead of words whenever possible. This will help you to remember information more easily.
 
