@@ -52,7 +52,7 @@ try:
         G.add_node(kw)
 
     # Add edges with similarity scores as weights
-    threshold = 0.5  # You can adjust this threshold
+    threshold = 0.8  # You can adjust this threshold
     for i, kw1 in enumerate(keyword_embeddings):
         for j, kw2 in enumerate(keyword_embeddings):
             if i != j and similarity_matrix[i, j] > threshold:
@@ -62,7 +62,7 @@ try:
 
     # Print the graph nodes and edges
 
-    print("------------------------------------------------------------/n")
+    print("------------------------------------------------------------")
     print(G.nodes())
 
 

@@ -53,3 +53,14 @@ Direction - I should make the edges convey more info, they can different types n
 6. Emphasized: Use visual cues, such as color and font size, to highlight the most important points in your mind map. This will help you to focus your attention when you are reviewing your notes.
 
 Emphasied - color, font size ( this is finding the characterstics)
+
+
+I've imlpemented a working functionality, I got a graph from input text and but it has several issues to fix.
+1. The relations are based on word embeddings, so I want to add my own meaning or create a algo that does so.
+2. The nodes are not interactive, I want to see how each node is connected by pulling them ( interactive with mouse)
+3. Use emojis, images to the nodes
+4. Visualize the values of edges so I can see which are close to next threshold.
+5. A switch to add or remove edges 
+6. This is by far the most useful, I can modify the output graph, any modification done so will fine tune the model, acts as training data so it gets updated on its own.
+7. Limit the no of edges so I can make it look like a central hub and others ideas from it.
+8. modify the edges to carry more information, their color & color intensity, their thickness and their shape.
