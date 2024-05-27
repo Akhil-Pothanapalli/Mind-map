@@ -4,8 +4,14 @@ import torch
 import networkx as nx
 import matplotlib.pyplot as plt
 from sklearn.metrics.pairwise import cosine_similarity
-from nltk.stem import PorterStemmer
+from nltk.stem import WordNetLemmatizer
+from nltk.corpus import wordnet
 from collections import defaultdict
+
+# Download necessary NLTK data
+import nltk
+nltk.download('wordnet')
+nltk.download('omw-1.4')
 
 # Initialize KeyBERT
 kw_model = KeyBERT()
@@ -27,16 +33,16 @@ def get_embedding(text):
     outputs = model(**inputs)
     return outputs.last_hidden_state.mean(dim=1)
 
-# Use a stemmer to merge similar keywords
-ps = PorterStemmer()
-stemmed_keywords = defaultdict(list)
+# Use a lemmatizer to merge similar keywords
+lemmatizer = WordNetLemmatizer()
+lemmatized_keywords = defaultdict(list)
 for kw, score in keywords:
-    stem = ps.stem(kw)
-    stemmed_keywords[stem].append((kw, score))
+    lemma = lemmatizer.lemmatize(kw)
+    lemmatized_keywords[lemma].append((kw, score))
 
-# Choose the highest scored keyword for each stem
+# Choose the highest scored keyword for each lemma
 final_keywords = {max(values, key=lambda x: x[1])[0]: get_embedding(max(values, key=lambda x: x[1])[0]) 
-                  for values in stemmed_keywords.values()}
+                  for values in lemmatized_keywords.values()}
 
 # Calculate cosine similarities
 similarity_matrix = cosine_similarity(
@@ -51,7 +57,7 @@ for kw in final_keywords:
     G.add_node(kw)
 
 # Add edges with similarity scores as weights
-threshold = 0.7  # Adjust this threshold as needed
+threshold = 0.3  # Adjust this threshold as needed
 keywords_list = list(final_keywords.keys())
 for i, kw1 in enumerate(keywords_list):
     for j, kw2 in enumerate(keywords_list):
