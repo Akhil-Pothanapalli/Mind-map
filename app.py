@@ -8,7 +8,8 @@ from sklearn.metrics.pairwise import cosine_similarity
 # Initialize KeyBERT
 kw_model = KeyBERT()
 
-text = "Steve Rogers is the superhero called Captain America. He was given super soldier serum that make him bulk and improving all his physical attributes. His girlfriend name is Peggy Carter. He carries a shield made of Vibranium. Captain America is the leader for the band of superheroes called Avengers."
+# User input for text
+text = input("Enter your text: ")
 
 # Extract keywords
 keywords = kw_model.extract_keywords(text, top_n=10)
@@ -40,26 +41,28 @@ for kw, _ in keywords:
     G.add_node(kw)
 
 # Add edges with similarity scores as weights
-threshold = 0.8  # You can adjust this threshold
 for i, kw1 in enumerate(keyword_embeddings):
     for j, kw2 in enumerate(keyword_embeddings):
-        if i != j and similarity_matrix[i, j] > threshold:
+        if i != j:
             G.add_edge(kw1, kw2, weight=similarity_matrix[i, j])
 
 # Function to calculate initial node positions
 def get_initial_positions(G):
-    pos = nx.spring_layout(G)
+    pos = nx.spring_layout(G, k=0.5, iterations=50)
     return pos
 
 # Create a plot with initial node positions
 pos = get_initial_positions(G)
-plt.figure(figsize=(12, 8))
+plt.figure(figsize=(14, 10))
 
 # Draw nodes
 nx.draw_networkx_nodes(G, pos, node_size=500, node_color='skyblue')
 
-# Draw edges
-nx.draw_networkx_edges(G, pos, width=1.0, alpha=0.5)
+# Draw edges with labels for weights
+edges = nx.draw_networkx_edges(G, pos, width=1.0, alpha=0.5)
+edge_labels = nx.get_edge_attributes(G, 'weight')
+edge_labels = {k: f'{v:.2f}' for k, v in edge_labels.items()}  # Format edge labels
+nx.draw_networkx_edge_labels(G, pos, edge_labels=edge_labels, font_size=8)
 
 # Draw labels
 nx.draw_networkx_labels(G, pos, font_size=12, font_color='black')
