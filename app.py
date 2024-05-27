@@ -1,3 +1,5 @@
+import os
+import nltk
 from keybert import KeyBERT
 from transformers import BertModel, BertTokenizer
 import torch
@@ -5,13 +7,17 @@ import networkx as nx
 import matplotlib.pyplot as plt
 from sklearn.metrics.pairwise import cosine_similarity
 from nltk.stem import WordNetLemmatizer
-from nltk.corpus import wordnet
 from collections import defaultdict
 
-# Download necessary NLTK data
-import nltk
-nltk.download('wordnet')
-nltk.download('omw-1.4')
+# Ensure NLTK data directory is within the virtual environment
+nltk_data_dir = os.path.join(os.path.dirname(__file__), 'nltk_data')
+os.makedirs(nltk_data_dir, exist_ok=True)
+os.environ['NLTK_DATA'] = nltk_data_dir
+
+# Download the required NLTK datasets if not already present
+nltk.data.path.append(nltk_data_dir)
+nltk.download('wordnet', download_dir=nltk_data_dir)
+nltk.download('omw-1.4', download_dir=nltk_data_dir)
 
 # Initialize KeyBERT
 kw_model = KeyBERT()
@@ -57,7 +63,7 @@ for kw in final_keywords:
     G.add_node(kw)
 
 # Add edges with similarity scores as weights
-threshold = 0.3  # Adjust this threshold as needed
+threshold = 0.65  # Adjust this threshold as needed
 keywords_list = list(final_keywords.keys())
 for i, kw1 in enumerate(keywords_list):
     for j, kw2 in enumerate(keywords_list):
