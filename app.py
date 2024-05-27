@@ -1,5 +1,3 @@
-import os
-import nltk
 from keybert import KeyBERT
 from transformers import BertModel, BertTokenizer
 import torch
@@ -8,16 +6,12 @@ import matplotlib.pyplot as plt
 from sklearn.metrics.pairwise import cosine_similarity
 from nltk.stem import WordNetLemmatizer
 from collections import defaultdict
+import emoji
+import nltk
 
-# Ensure NLTK data directory is within the virtual environment
-nltk_data_dir = os.path.join(os.path.dirname(__file__), 'nltk_data')
-os.makedirs(nltk_data_dir, exist_ok=True)
-os.environ['NLTK_DATA'] = nltk_data_dir
-
-# Download the required NLTK datasets if not already present
-nltk.data.path.append(nltk_data_dir)
-nltk.download('wordnet', download_dir=nltk_data_dir)
-nltk.download('omw-1.4', download_dir=nltk_data_dir)
+# Download necessary NLTK data
+nltk.download('wordnet')
+nltk.download('omw-1.4')
 
 # Initialize KeyBERT
 kw_model = KeyBERT()
@@ -63,7 +57,7 @@ for kw in final_keywords:
     G.add_node(kw)
 
 # Add edges with similarity scores as weights
-threshold = 0.65  # Adjust this threshold as needed
+threshold = 0.65  # Adjusted threshold
 keywords_list = list(final_keywords.keys())
 for i, kw1 in enumerate(keywords_list):
     for j, kw2 in enumerate(keywords_list):
@@ -75,12 +69,41 @@ def get_initial_positions(G):
     pos = nx.spring_layout(G, k=0.5, iterations=50)
     return pos
 
+# Create a mapping of predefined emojis
+predefined_emoji_mapping = {
+    "cricket": "🏏",
+    "batsman": "🏏",
+    "captain": "👨‍✈️",
+    "leader": "👨‍✈️",
+    "team": "👥",
+    "match": "🏟️",
+    "win": "🏆",
+    "run": "🏃",
+    "ball": "⚾",
+    "score": "📊",
+    # Add more mappings as necessary
+}
+
+# Function to get emoji for a keyword
+def get_emoji(keyword):
+    if keyword in predefined_emoji_mapping:
+        return predefined_emoji_mapping[keyword]
+    else:
+        # Fallback: Use the first emoji returned for the keyword
+        emj = emoji.emojize(f':{keyword}:')
+        if emj != f':{keyword}:':
+            return emj
+        else:
+            return ""
+
 # Create a plot with initial node positions
 pos = get_initial_positions(G)
 plt.figure(figsize=(14, 10))
 
-# Draw nodes
+# Draw nodes with emojis as labels
 nx.draw_networkx_nodes(G, pos, node_size=500, node_color='skyblue')
+labels = {node: f'{node} {get_emoji(node)}' for node in G.nodes()}
+nx.draw_networkx_labels(G, pos, labels, font_size=12, font_color='black')
 
 # Draw edges with labels for weights
 edges = nx.draw_networkx_edges(G, pos, width=1.0, alpha=0.5)
@@ -88,9 +111,6 @@ edge_labels = nx.get_edge_attributes(G, 'weight')
 edge_labels = {k: f'{v:.2f}' for k, v in edge_labels.items()}  # Format edge labels
 nx.draw_networkx_edge_labels(G, pos, edge_labels=edge_labels, font_size=8)
 
-# Draw labels
-nx.draw_networkx_labels(G, pos, font_size=12, font_color='black')
-
 # Display the graph
-plt.title('Keyword Similarity Graph')
+plt.title('Keyword Similarity Graph with Emojis')
 plt.show()
