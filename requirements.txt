@@ -8,3 +8,4 @@ matplotlib
 bokeh
 nltk
 emoji
+Tinkerer

@@ -1,17 +1,22 @@
+import tkinter as tk
+import networkx as nx
+import matplotlib.pyplot as plt
+from collections import defaultdict
 from keybert import KeyBERT
 from transformers import BertModel, BertTokenizer
 import torch
-import networkx as nx
-import matplotlib.pyplot as plt
 from sklearn.metrics.pairwise import cosine_similarity
 from nltk.stem import WordNetLemmatizer
-from collections import defaultdict
-import emoji
 import nltk
+import emoji
 
 # Download necessary NLTK data
 nltk.download('wordnet')
 nltk.download('omw-1.4')
+
+# Set the default font for Tkinter widgets to a font that supports emojis
+root = tk.Tk()
+root.option_add('*Font', 'Noto Color Emoji')  # Ensure this font is installed on your system
 
 # Initialize KeyBERT
 kw_model = KeyBERT()
@@ -103,7 +108,7 @@ plt.figure(figsize=(14, 10))
 # Draw nodes with emojis as labels
 nx.draw_networkx_nodes(G, pos, node_size=500, node_color='skyblue')
 labels = {node: f'{node} {get_emoji(node)}' for node in G.nodes()}
-nx.draw_networkx_labels(G, pos, labels, font_size=12, font_color='black')
+nx.draw_networkx_labels(G, pos, labels, font_size=12, font_color='black', font_family='Noto Color Emoji')
 
 # Draw edges with labels for weights
 edges = nx.draw_networkx_edges(G, pos, width=1.0, alpha=0.5)
