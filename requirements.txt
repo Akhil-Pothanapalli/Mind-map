@@ -9,3 +9,4 @@ bokeh
 nltk
 emoji
 Tinkerer
+pyvis

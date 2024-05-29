@@ -1,66 +1,74 @@
-# Mind-map
+Mind Map Generator 🧠✨
 
-When we learn something new, we learn them in discrete but seldom we know how these components in the big picture. My goal is to create a model that takes in text input and generates a mind map out of it. 
+Introduction
+Welcome to the Mind Map Generator project! This application is designed to transform text input into a dynamic mind map, showcasing the relationships between key concepts. Unlike traditional mind map tools, our model uses AI to create nodes and edges based on the provided text, aiming to improve understanding through visual interconnections.
 
-Why another mindmap model?
-1. Market models ranks tree structure higher than graph structure. Mind maps are great because they show the interdependecies.
-2. AI is used to create branches based on its knowledge, but I want the AI to create these nodes and edges based on the text provided.
+Why Another Mind Map Model?
+Graph Structure Superiority: Traditional mind maps often prioritize tree structures. Our approach emphasizes graph structures to better display interdependencies.
+Text-Based Node Creation: Instead of relying solely on predefined knowledge, our AI generates nodes and edges directly from your text input.
 
-I have a very little idea to manifest this. But I will gather enough resources to push this forward. 
+Features & Goals
+Multimodal Input: Future versions will support different types of input, not just text.
+Human-like Appearance: A toggle to switch between computer-generated and human-like text.
+Customizable Complexity: A slider to adjust the number of keywords for varying complexity.
+Mind Map Merging: Merge existing mind maps into a comprehensive one.
 
-Tips for moving forward:
-How mindmaps are usaully created?
-What the best/ optimal way to create a mindmap?
+Approach and Development Journey
+Initial Concept 💡
+Initially, the goal was to train a neural network to generate mind maps directly from text. However, due to the subjective nature of mind maps and the difficulty in acquiring enough training data, the approach shifted.
 
-Future of mindmaps:
-Take multimodal input.
-A toggle switch to turn the computer generated words to human writing in appearance.
-A slider to select the number of keywords, so the mind map can vary from simple to complex. 
-Merge exisiting mindmaps into a major mindmap.
+Keyword Extraction
+1. Tools Used:
+KeyBERT: For keyword extraction.
+WordNetLemmatizer: To merge similar keywords.
+Spacy: For text processing and generating embedding vectors.
+2. Challenges:
+Direct model loading impacted storage.
+Alternatives like top2vec are planned for future enhancements.
 
+Visualization and Interaction 🖼️🖱️
+Interactive Nodes: Users can interact with the nodes to see connections.
+Emojis and Images: Adding visual elements to nodes.
+Edge Visualization: Displaying edge values and their information through color, thickness, and shape.
+Editable Graph: Modifying the output graph will help fine-tune the model.
 
-Inorder to create an effective mindmap, this video helped me to initiate my journey:
-https://youtu.be/5zT_2aBP6vM?si=S0Hgtv_lCAqFGfXz
+Current Status 🛠️
+The application successfully generates a graph from the input text with some limitations:
+Relations are based on word embeddings; an improved algorithm is needed.
+Nodes are not fully interactive yet.
+Emojis and images need better integration.
+Edge values require clearer visualization.
+The ability to add/remove edges is under development.
+Edits to the graph should update the model, enhancing its learning.
 
-The key points are 6-step mnemonic called GRIND: Grouped, Reflective, Interconnected, Non-verbal, Directional, and Emphasized.
+Implementation Details
+File Structure
+1. app.py: Main application file.
+2. discardedapp.py: Previous version highlighting the development journey and changes in approach.
+Usage
+1. Run the Application:
+bash
+Copy code
+python app.py
+2. Enter Text:
+Input the text for which you want to generate a mind map.
+3. View Output:
+The generated mind map will be saved as an HTML file (keyword_similarity_graph.html).
 
-1. Grouped: Organize your ideas into categories. This will help you see the relationships between different concepts.
+Key Technologies
+Python: Core programming language.
+KeyBERT: Keyword extraction.
+BERT: Pre-trained language model.
+NetworkX: Graph creation and manipulation.
+PyVis: Visualization of the graph.
+NLTK: Natural Language Toolkit for text processing.
 
-Now preparing the data to do so, is nearlly impossble, because mind maps are subjective and acquiring so called data is not happening as of now. So I'm changing my approach from training the neural network on input text to output mind map to extracting key words on from data, finding their dependecies and ranking the words.
+Future Enhancements
+Improved Node Interaction: Making nodes draggable and more interactive.
+Enhanced Visual Elements: Better integration of images and emojis.
+Advanced Edge Information: Adding more details to the edges.
+Graph Editing: Allowing users to modify the graph and update the model accordingly.
 
-During my hunt for solution this step, I came across KeyBERT and top2Vec. Initially I will implement KeyBERT. top2Vec is planned for future version. Followed by them I will cluster them so that I can find the sub topics this solves the first one - grouped.
-
-I've successfully implemented the keyword extractor, but loading the model directly is creating impact, to the storage, next use API's.
-
-2. Reflective: Your mind map should reflect how you think, not how you write linearly. Don't be afraid to experiment with different layouts.
-
-For this I will use top2vec in future.
-
-When it comes to reflective, I want it to be a graph rather than tree also try different ones so I can find better version. I can take reference from random forest. But this is where humans excel over machines.
-
-3. Interconnected: Look for connections between different ideas, even if they seem distant at first. This will help you create a more holistic understanding of the topic.
-
-Interconnected - this is somewhat similar to graph I need to connect them based on cause-effect, who, where etc., there can n types or so. I tried Word2Vec to generate the embedding vector and find similarities but it's depedent on C++ compiler. My current resources doesn't support such huge Visual Studio and so on. So looking for alternatives and found Spacy. 
-
-4. Non-verbal: Use images, symbols, and doodles instead of words whenever possible. This will help you to remember information more easily.
-
-Non verbal - this is where hugging face models comes handy, any models that creates doodles or stable diffusion, emojis, and symbols.
-
-5. Directional: Arrange your ideas in a way that shows the flow of information. This will help you to see the cause-and-effect relationships between different concepts.
-
-Direction - I should make the edges convey more info, they can different types not just arrow, double weighted arrows
-
-6. Emphasized: Use visual cues, such as color and font size, to highlight the most important points in your mind map. This will help you to focus your attention when you are reviewing your notes.
-
-Emphasied - color, font size ( this is finding the characterstics)
-
-
-I've imlpemented a working functionality, I got a graph from input text and but it has several issues to fix.
-1. The relations are based on word embeddings, so I want to add my own meaning or create a algo that does so.
-2. The nodes are not interactive, I want to see how each node is connected by pulling them ( interactive with mouse)
-3. Use emojis, images to the nodes
-4. Visualize the values of edges so I can see which are close to next threshold.
-5. A switch to add or remove edges 
-6. This is by far the most useful, I can modify the output graph, any modification done so will fine tune the model, acts as training data so it gets updated on its own.
-7. Limit the no of edges so I can make it look like a central hub and others ideas from it.
-8. modify the edges to carry more information, their color & color intensity, their thickness and their shape.
+Resources
+Mind Map Creation Video: Watch Here
+GRIND Mnemonic: Grouped, Reflective, Interconnected, Non-verbal, Directional, and Emphasized.

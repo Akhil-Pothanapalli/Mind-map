@@ -1,6 +1,5 @@
-import tkinter as tk
+import os
 import networkx as nx
-import matplotlib.pyplot as plt
 from collections import defaultdict
 from keybert import KeyBERT
 from transformers import BertModel, BertTokenizer
@@ -9,14 +8,15 @@ from sklearn.metrics.pairwise import cosine_similarity
 from nltk.stem import WordNetLemmatizer
 import nltk
 import emoji
+from pyvis.network import Network
 
-# Download necessary NLTK data
-nltk.download('wordnet')
-nltk.download('omw-1.4')
+# Constants
+FONT_PATH = r"fonts\NotoColorEmoji.ttf"
+HTML_FILE = "keyword_similarity_graph.html"
 
-# Set the default font for Tkinter widgets to a font that supports emojis
-root = tk.Tk()
-root.option_add('*Font', 'Noto Color Emoji')  # Ensure this font is installed on your system
+# Delete existing HTML file if it exists
+if os.path.exists(HTML_FILE):
+    os.remove(HTML_FILE)
 
 # Initialize KeyBERT
 kw_model = KeyBERT()
@@ -101,21 +101,14 @@ def get_emoji(keyword):
         else:
             return ""
 
-# Create a plot with initial node positions
-pos = get_initial_positions(G)
-plt.figure(figsize=(14, 10))
+# Create a network
+net = Network(height="100%", width="100%", bgcolor="#222222", font_color="white")
 
-# Draw nodes with emojis as labels
-nx.draw_networkx_nodes(G, pos, node_size=500, node_color='skyblue')
-labels = {node: f'{node} {get_emoji(node)}' for node in G.nodes()}
-nx.draw_networkx_labels(G, pos, labels, font_size=12, font_color='black', font_family='Noto Color Emoji')
+# Add nodes and edges
+for node in G.nodes():
+    net.add_node(node, label=f"{node} {get_emoji(node)}")
+for edge in G.edges():
+    net.add_edge(edge[0], edge[1], value=G.edges[edge]['weight'])
 
-# Draw edges with labels for weights
-edges = nx.draw_networkx_edges(G, pos, width=1.0, alpha=0.5)
-edge_labels = nx.get_edge_attributes(G, 'weight')
-edge_labels = {k: f'{v:.2f}' for k, v in edge_labels.items()}  # Format edge labels
-nx.draw_networkx_edge_labels(G, pos, edge_labels=edge_labels, font_size=8)
-
-# Display the graph
-plt.title('Keyword Similarity Graph with Emojis')
-plt.show()
+# Save as HTML file
+net.write_html(HTML_FILE)
