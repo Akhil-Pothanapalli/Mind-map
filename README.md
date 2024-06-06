@@ -1,4 +1,4 @@
-**This project is currently, when I get equipped with enough knowledge I will work on this again.**
+**🚫 This project is currently, when I get equipped with enough knowledge I will work on this again.🚫** 
 
 Mind Map Generator 🧠✨
 
